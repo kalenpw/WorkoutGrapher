@@ -3,13 +3,6 @@ import re
 import models
 
 
-def handle_sheet(values):
-    exercies = parse_sheet(values)
-
-    for exercise in exercies:
-        print(exercise)
-
-
 def parse_sheet(values):
     # arbitrary since I go date name then sets
     all_exercies = []
@@ -29,7 +22,21 @@ def parse_sheet(values):
         handle_row(current_exercise, row)
         all_exercies.append(current_exercise)
 
-    return all_exercies
+    return create_dict_from_list(all_exercies)
+
+
+def create_dict_from_list(exercises):
+    """ Creates a dict where each key is an exercie's name from a list of all exercies"""
+    exercise_dict = {}
+
+    for exercise in exercises:
+        exercise_name = exercise.name.strip().lower()
+        if not exercise_name in exercise_dict:
+            exercise_dict[exercise_name] = []
+
+        exercise_dict[exercise_name].append(exercise)
+    
+    return exercise_dict
 
 
 def handle_row(exercise, row):

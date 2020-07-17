@@ -4,7 +4,17 @@ import numpy as np
 import datetime as dt
 
 
-def handle_graphing(exercies):
+def handle_graphing(exercises):
+    graph_number = 1
+    for key in exercises:
+        graph_exercise(exercises[key], graph_number)
+
+
+
+def graph_exercise(exercise, graph_number):
+    # used for title
+    exercise_name = exercise[0].name
+
     # X axis
     weights = []
     # Y axis
@@ -14,16 +24,10 @@ def handle_graphing(exercies):
     y_min = 0
     y_max = 0
 
-    squats = []
-
-    for exercise in exercies:
-        exercise_name = exercise.name.strip().lower()
-        if exercise_name == "squat":
-            squats.append(exercise)
-
-    for squat in squats:
-        for set in squat.sets:
-            dates.append(squat.date)
+    # build x axis of weights with y axis of date
+    for day in exercise:
+        for set in day.sets:
+            dates.append(day.date)
             weights.append(int(set.weight))
             if int(set.weight) > y_max:
                 y_max = int(set.weight)
@@ -34,17 +38,18 @@ def handle_graphing(exercies):
     # The colormap
     cmap = cm.jet
 
-    # find min and max dates
-    date_min = np.datetime64(squats[0].date)
+    # show 1 week before and after to have some padding
+    date_min = np.datetime64(exercise[0].date)
     date_min = date_min - np.timedelta64(7, 'D')
-    date_max = np.datetime64(squats[-1].date)
+    date_max = np.datetime64(exercise[-1].date)
     date_max = date_max + np.timedelta64(7, 'D')
 
+    # leave arbitrary padding at top (+15)
     major_ticks = np.arange(0, y_max + 15, 25)
     minor_ticks = np.arange(0, y_max + 15, 5)
 
     # Create figure and axes
-    fig = plt.figure(1)
+    fig = plt.figure(graph_number)
     fig.canvas.set_window_title("Workouts")
     fig.clf()
     ax = fig.add_subplot(1, 1, 1)
@@ -57,6 +62,6 @@ def handle_graphing(exercies):
     ax.set_yticks(minor_ticks, minor=True)
     ax.grid(which='major', axis='y')
     plt.xticks(rotation='vertical')
-    plt.title("Squat")
+    plt.title(exercise_name.title())
 
     plt.show()
